@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/backgrounda"
+    android:descendantFocusability="blocksDescendants"
+    tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="317dp"
+        android:layout_marginTop="128dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/havenot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="134dp"
+            android:text="@string/havenottoday"
+            android:textColor="@color/maxWhite"
+            android:textSize="18sp" />
+
+        <ListView
+            android:id="@+id/list_jobs"
+            android:layout_width="514dp"
+            android:layout_height="match_parent" />
+
+
+    </RelativeLayout>
+    <ImageView
+        android:id="@+id/today"
+        android:layout_width="97dp"
+        android:layout_height="65dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/today" />
+
+    <TextView
+        android:id="@+id/label_today"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginStart="112dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/today"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/day" />
+
+    <TextView
+        android:id="@+id/day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/date"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toEndOf="@+id/today"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/add_job"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="16dp"
+        android:background="@null"
+        app:layout_constraintStart_toEndOf="@+id/day"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/add" />
+
+    <Spinner
+        android:id="@+id/filter"
+        android:layout_width="138dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="8dp"
+        android:outlineAmbientShadowColor="@color/white"
+        app:layout_constraintStart_toEndOf="@+id/label_today"
+        app:layout_constraintTop_toBottomOf="@+id/add_job" />
+
+    <Button
+        android:id="@+id/delete_all"
+        android:layout_width="94dp"
+        android:layout_height="63dp"
+        android:layout_marginEnd="8dp"
+        android:background="@null"
+        android:text="@string/delete"
+        android:textColor="@color/maxWhite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2" />
+
+    <Button
+        android:id="@+id/done_all"
+        android:layout_width="126dp"
+        android:layout_height="63dp"
+        android:background="@null"
+        android:text="@string/jobdone"
+        android:textColor="@color/maxWhite"
+        app:layout_constraintEnd_toStartOf="@+id/delete_all"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:text="@string/choosecanlader"
+        android:textColor="@color/maxWhite"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/today" />
+
+    <ImageView
+        android:id="@+id/ImportantFilter"
+        android:layout_width="35dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/filter"
+        app:layout_constraintTop_toBottomOf="@+id/label_today"
+        app:srcCompat="@drawable/important" />
+
+</android.support.constraint.ConstraintLayout>

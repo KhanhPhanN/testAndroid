@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/time_detail_complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:gravity="left"
+        android:text="Thời gian"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/type_complete"
+        app:layout_constraintTop_toBottomOf="@+id/subject_complete" />
+
+    <TextView
+        android:id="@+id/subject_complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:gravity="left"
+        android:text="Chủ đề"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/type_complete"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/come_back"
+        android:layout_width="54dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="45dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/undo" />
+
+    <ImageView
+        android:id="@+id/type_complete"
+        android:layout_width="92dp"
+        android:layout_height="84dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/add" />
+
+    <ImageView
+        android:id="@+id/done_important"
+        android:layout_width="42dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="45dp"
+        app:layout_constraintEnd_toStartOf="@+id/come_back"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/important" />
+</android.support.constraint.ConstraintLayout>

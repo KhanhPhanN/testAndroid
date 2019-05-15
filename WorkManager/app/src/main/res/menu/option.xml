@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<item
+    android:title="Công việc đã hoàn thành"
+    android:id="@+id/completeJob"
+    app:showAsAction="ifRoom"
+    />
+<item
+        android:title="Biểu đồ"
+        android:id="@+id/achart"
+        app:showAsAction="ifRoom" />
+    <item
+        android:title="Hướng dẫn"
+        android:id="@+id/guide"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:title="Lịch sử"
+        android:id="@+id/history"
+        app:showAsAction="ifRoom"/>
+</menu>

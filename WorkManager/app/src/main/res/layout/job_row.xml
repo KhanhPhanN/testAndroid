@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/time_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="16dp"
+        android:gravity="left"
+        android:text="@string/subject"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/imageSubrow"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/subj"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="8dp"
+        android:gravity="left"
+        android:text="@string/time"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/imageSubrow"
+        app:layout_constraintTop_toBottomOf="@+id/time_detail" />
+
+    <ImageView
+        android:id="@+id/label_del"
+        android:layout_width="42dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toEndOf="@+id/checkPass"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/delete" />
+
+    <ImageView
+        android:id="@+id/imageSubrow"
+        android:layout_width="78dp"
+        android:layout_height="76dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/meeting" />
+
+    <ImageView
+        android:id="@+id/important"
+        android:layout_width="42dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="224dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toStartOf="@+id/imageSubrow"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/important" />
+
+    <ImageView
+        android:id="@+id/checkPass"
+        android:layout_width="42dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toEndOf="@+id/important"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/checked" />
+</android.support.constraint.ConstraintLayout>

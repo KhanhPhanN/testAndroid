@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/backgrounda"
+    tools:context=".CompleteJob">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/filter_complete">
+
+        <TextView
+            android:id="@+id/havenotdone1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="168dp"
+            android:text="Chưa có công việc đã hoàn thành"
+            android:textColor="@color/maxWhite"
+            android:textSize="18sp" />
+
+        <ListView
+            android:id="@+id/list_complete"
+            android:layout_width="345dp"
+            android:layout_height="389dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/unfinished"
+        android:layout_width="226dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="64dp"
+        android:background="@null"
+        android:text="Tất cả chưa hoàn thành"
+        android:textColor="@color/maxWhite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
+
+    <ImageView
+        android:id="@+id/image_complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/today" />
+
+    <TextView
+        android:id="@+id/day_complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="Ngày"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/image_complete"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/filter_complete"
+        android:layout_width="122dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/image_complete"
+        app:layout_constraintTop_toBottomOf="@+id/day_complete" />
+
+</android.support.constraint.ConstraintLayout>
