@@ -74,4 +74,26 @@
         android:background="@null"
         android:text="Mặc định" />
 
+    <TextView
+        android:id="@+id/textViewTestBe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/combinedChart"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="-60dp"
+        android:layout_marginEnd="110dp"
+        android:textStyle="italic"
+        android:text="Tuần trước" />
+
+    <TextView
+        android:id="@+id/textViewTestAf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/combinedChart"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="-60dp"
+        android:layout_marginEnd="37dp"
+        android:textStyle="italic"
+        android:text="Tuần sau" />
+
 </RelativeLayout>

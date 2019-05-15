@@ -45,7 +45,8 @@ public class ChartActivity extends AppCompatActivity {
     int[] countJobDay, countUnfinshed, countFinished;
     Database database;
     Button c_all,c_fi, c_un, c_de;
-    TextView titel, move;
+    TextView titel, move, test1, test2;
+    String rand;
     boolean m = true;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -94,8 +95,11 @@ public class ChartActivity extends AppCompatActivity {
         c_de = findViewById(R.id.chart_default);
         titel = findViewById(R.id.chart_label);
         move = findViewById(R.id.move_chart);
+        test1 = findViewById(R.id.textViewTestBe);
+        test2 = findViewById(R.id.textViewTestAf);
         setData();
-        countJobDay(day);
+        listDay = getDayOfWeek(day);
+        countJobDay();
         for(int i=0;i<listDay.size();i++){
             listDay.set(i,listDay.get(i).substring(0,5));
         }
@@ -138,6 +142,9 @@ public class ChartActivity extends AppCompatActivity {
                     c_de.setVisibility(View.INVISIBLE);
                     c_fi.setVisibility(View.INVISIBLE);
                     c_un.setVisibility(View.INVISIBLE);
+                    test1.setVisibility(View.INVISIBLE);
+                    test2.setVisibility(View.INVISIBLE);
+
                     drawChart(listFilter, countJobType);
                     m=false;
                 }
@@ -148,10 +155,34 @@ public class ChartActivity extends AppCompatActivity {
                     c_de.setVisibility(View.VISIBLE);
                     c_fi.setVisibility(View.VISIBLE);
                     c_un.setVisibility(View.VISIBLE);
+                    test1.setVisibility(View.VISIBLE);
+                    test2.setVisibility(View.VISIBLE);
                     drawChartDay(listDay, countJobDay, countFinished, countUnfinshed,true,true,true);
                     m=true;
                 }
 
+            }
+        });
+        test1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listDay = getDayOfWeekBefore(dayOfyear);
+                countJobDay();
+                for(int i=0;i<listDay.size();i++){
+                    listDay.set(i,listDay.get(i).substring(0,5));
+                }
+                drawChartDay(listDay, countJobDay, countFinished, countUnfinshed,true,true,true);
+            }
+        });
+        test2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listDay = getDayOfWeekAfter(dayOfyear);
+                countJobDay();
+                for(int i=0;i<listDay.size();i++){
+                    listDay.set(i,listDay.get(i).substring(0,5));
+                }
+                drawChartDay(listDay, countJobDay, countFinished, countUnfinshed,true,true,true);
             }
         });
     }
@@ -396,20 +427,39 @@ public class ChartActivity extends AppCompatActivity {
     }
    // Lấy danh sách ngày 1 tuần trước tuần hiện tại
     public List getDayOfWeekBefore(int currentDay){
-        String randomDay = listDay.get(0);
-        String[] date = randomDay.split("/");
+        String[] date = rand.split("/");
         String x;
         if(Integer.parseInt(date[2])%4==0){
             if(dayOfyear<7){
-                x=dayOfMonthleap.get(365+dayOfyear-7)+(Integer.parseInt(date[2])-1);
+                x=dayOfMonthleap.get(365+dayOfyear-7)+"/"+(Integer.parseInt(date[2])-1);
             }else{
-                x=dayOfMonthleap.get(dayOfyear-7)+Integer.parseInt(date[2]);
+                x=dayOfMonthleap.get(dayOfyear-7)+"/"+Integer.parseInt(date[2]);
             }
         }else{
             if(dayOfyear<7){
-                x=dayOfMonth.get(365+dayOfyear-7)+(Integer.parseInt(date[2])-1);
+                x=dayOfMonth.get(365+dayOfyear-7)+"/"+(Integer.parseInt(date[2])-1);
             }else{
-                x=dayOfMonth.get(dayOfyear-7)+Integer.parseInt(date[2]);
+                x=dayOfMonth.get(dayOfyear-7)+"/"+Integer.parseInt(date[2]);
+            }
+        }
+        List<String> list = getDayOfWeek(x);
+        return list;
+    }
+    // Lấy danh sách ngày 1 tuần sau tuần hiện tại
+    public List getDayOfWeekAfter(int currentDay){
+        String[] date = rand.split("/");
+        String x;
+        if(Integer.parseInt(date[2])%4==0){
+            if(dayOfyear>359){
+                x=dayOfMonthleap.get(dayOfyear+7-366)+"/"+(Integer.parseInt(date[2])-1);
+            }else{
+                x=dayOfMonthleap.get(dayOfyear+7)+"/"+Integer.parseInt(date[2]);
+            }
+        }else{
+            if(dayOfyear>358){
+                x=dayOfMonth.get(dayOfyear+7-365)+"/"+(Integer.parseInt(date[2])-1);
+            }else{
+                x=dayOfMonth.get(dayOfyear+7)+"/"+Integer.parseInt(date[2]);
             }
         }
         List<String> list = getDayOfWeek(x);
@@ -454,8 +504,8 @@ public class ChartActivity extends AppCompatActivity {
         }
     }
     // Đếm số lượng công việc trong 1 tuần, theo chưa hoàn thành, đã hoàn thành và cả hai
-    public  void countJobDay(String date){
-     listDay = getDayOfWeek(date);
+    public  void countJobDay(){
+        rand = listDay.get(0);
      List<Job> model = new ArrayList<>();
         for (int i =0;i<7;i++){
             countJobDay[i]    = 0 ;
