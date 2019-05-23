@@ -1,6 +1,8 @@
 package com.example.enterc.workmanager;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -123,10 +126,29 @@ public class HistoryJob extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 database.SQLQuery("DELETE FROM History WHERE Id  = '"+job.getId()+"'");
-                                //Job job = new Job(date, time_start, time_end, sub, cont, false);
                                 String query = "INSERT INTO CongViec VALUES(null,'"+job.getDate()+"','"+job.getTime_start()+"','"+job.getTime_end()+"','"+job.getSubject()+"','"+job.getContent()+"','"+job.isComplete()+"')";
                                 database.SQLQuery(query);
                                 getData();
+                                Calendar calendar = Calendar.getInstance();
+                                AlarmManager alarmManager;
+                                PendingIntent pendingIntent;
+                                String[] arrDay = job.getDate().split("/");
+                                String[] arrTime = job.getTime_start().split(":");
+                                final int y = Integer.parseInt(arrDay[2]);
+                                final int m = Integer.parseInt(arrDay[1])-1;
+                                final int d = Integer.parseInt(arrDay[0]);
+                                int h       = Integer.parseInt(arrTime[0]);
+                                int mi      = Integer.parseInt(arrTime[1]);
+                                calendar.set(y,m,d,h,mi);
+                                int codePending = Integer.parseInt(arrDay[0]+arrDay[1]+arrTime[0]+arrTime[1]);
+                                // Thông báo công việc gần nhất
+                                alarmManager= (AlarmManager) getSystemService(ALARM_SERVICE);
+                                Intent intentAlarm = new Intent(HistoryJob.this,AlarmRecevier.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("nameSubject",job.getSubject());
+                                intentAlarm.putExtra("nameBundle", bundle);
+                                pendingIntent = PendingIntent.getBroadcast(HistoryJob.this, codePending, intentAlarm,PendingIntent.FLAG_UPDATE_CURRENT);
+                                alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(), pendingIntent);
                             }
                         });
                         builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {

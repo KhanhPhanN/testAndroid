@@ -39,6 +39,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import java.nio.BufferUnderflowException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,15 +59,14 @@ public class MainActivity extends AppCompatActivity {
     List<String> list, filterl;
     Button del_all, done_all;
     int check_im = 3;
-    private static final int MY_NOTIFICATION_ID = 12345;
-    private static final int MY_REQUEST_CODE = 100;
+    int CODE = 0;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         new MenuInflater(this).inflate(R.menu.option,menu);
         return super.onCreateOptionsMenu(menu);
     }
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)  {
         if(item.getItemId()==R.id.completeJob){
             Intent intent = new Intent(MainActivity.this,CompleteJob.class);
             Bundle bundle = new Bundle();
@@ -114,8 +115,6 @@ public class MainActivity extends AppCompatActivity {
         list.add("Cà phê");
         list.add("Hằng ngày");
         list.add("Khác");
-
-       // ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item,list);
         SpinnerAdapterA adapter = new SpinnerAdapterA(MainActivity.this, R.layout.layout_spinner, list);
         adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
         spinner.setAdapter(adapter);
@@ -139,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         final Calendar calendar = Calendar.getInstance();
-        //SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         show_calender.setText(dayshow.getText().toString());
         // chọn lịch
         calender.setOnClickListener(new View.OnClickListener() {
@@ -238,31 +236,24 @@ public class MainActivity extends AppCompatActivity {
                 } else if (cont.length() == 0) {
                     Toast.makeText(MainActivity.this, getResources().getText(R.string.contentWrong), Toast.LENGTH_SHORT).show();
                 } else {
-                    //Job job = new Job(date, time_start, time_end, sub, cont, false);
                     String query = "INSERT INTO CongViec VALUES(null,'"+date+"','"+time_start+"','"+time_end+"','"+sub+"','"+cont+"','"+check_important[0]+"')";
                     database.SQLQuery(query);
                     getData(dayshow.getText().toString());
-                    //jobAdapter.add(job);
                     // Cài đặt thông báo
-
-
                     AlarmManager alarmManager;
                     PendingIntent pendingIntent;
-
+                    String[] arrDay = date.split("/");
+                    String[] arrTime = time_start.split(":");
+                    int codePending = Integer.parseInt(arrDay[0]+arrDay[1]+arrTime[0]+arrTime[1]);
                     // Thông báo công việc gần nhất
                     alarmManager= (AlarmManager) getSystemService(ALARM_SERVICE);
-                    Intent intentAlarm = new Intent(MainActivity.this,AlarmRecevier1.class);
-                    pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intentAlarm,PendingIntent.FLAG_UPDATE_CURRENT);
-                   // Calendar  currentTime = Calendar.getInstance();
-                   // currentTime.set(currentTime.get(Calendar.YEAR), currentTime.get(Calendar.MONTH),currentTime.get(Calendar.DATE),currentTime.get(Calendar.HOUR_OF_DAY),currentTime.get(Calendar.MINUTE));
-                   // int tineAlarm = (int) ((calendarOne[0].getTimeInMillis()-currentTime.getTimeInMillis())-5*60*1000);
-                    //Toast.makeText(MainActivity.this, calendarOne[0].getTimeInMillis()+"\n"+currentTime.getTimeInMillis(), Toast.LENGTH_LONG).show();
-                    //Log.e("ok1", calendarOne[0].getTimeInMillis()+"\n"+currentTime.getTimeInMillis()+"\n"+tineAlarm);
+                    Intent intentAlarm = new Intent(MainActivity.this,AlarmRecevier.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("nameSubject",sub);
+                    intentAlarm.putExtra("nameBundle", bundle);
+                    pendingIntent = PendingIntent.getBroadcast(MainActivity.this, codePending, intentAlarm,PendingIntent.FLAG_UPDATE_CURRENT);
                     alarmManager.set(AlarmManager.RTC_WAKEUP,calendarOne[0].getTimeInMillis(), pendingIntent);
-                    //notice();
-
                     // Hết thông báo
-
                     dialog.dismiss();
                 }
             }
@@ -336,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
         database.SQLQuery("CREATE TABLE IF NOT EXISTS History(Id INTEGER PRIMARY KEY AUTOINCREMENT, Date VARCHAR(30),TimeS VARCHAR(10), TimeE VARCHAR(10),Subject VARCHAR(100),Content VARCHAR(1000),Complete VARCHAR(6))");
         model       = new ArrayList<>();
         inputCheck  = new InputCheck();
-        jobAdapter = new JobAdapter(MainActivity.this, R.layout.job_row, choose);
+        jobAdapter  = new JobAdapter(MainActivity.this, R.layout.job_row, choose);
         listJobs.setAdapter(jobAdapter);
         getData(dayshow.getText().toString());
         dayCalender.setOnClickListener(new View.OnClickListener() {
@@ -389,6 +380,7 @@ public class MainActivity extends AppCompatActivity {
                                 database.SQLQuery("DELETE FROM CongViec WHERE Id  = '"+i.getId()+"'");
                                 String query = "INSERT INTO History VALUES(null,'"+i.getDate()+"','"+i.getTime_start()+"','"+i.getTime_end()+"','"+i.getSubject()+"','"+i.getContent()+"','"+i.isComplete()+"')";
                                  database.SQLQuery(query);
+                                 delNotification(i);
                             }
                             getData(dayshow.getText().toString());
                         }
@@ -438,11 +430,37 @@ public class MainActivity extends AppCompatActivity {
                     builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            boolean check = false;
                             for (Job i: choose){
-                        i.setComplete(!i.isComplete());
-                        database.SQLQuery("DELETE FROM CongViec WHERE Id  = '"+i.getId()+"'");
-                        String query = "INSERT INTO HoanThanh VALUES(null,'"+i.getDate()+"','"+i.getTime_start()+"','"+i.getTime_end()+"','"+i.getSubject()+"','"+i.getContent()+"','"+i.isComplete()+"')";
-                        database.SQLQuery(query);
+                                Calendar c = Calendar.getInstance();
+                                SimpleDateFormat formatday = new SimpleDateFormat("dd/MM/yyyy");
+                                SimpleDateFormat formattime= new SimpleDateFormat("HH:mm");
+                                String dateD            = formatday.format(c.getTime());
+                                String timeD            = formattime.format(c.getTime());
+                                if(dayshow.getText().toString().compareTo(dateD)>0){
+                                  check = true;
+                                }else{
+                                    if(i.getTime_start().compareTo(timeD)>0){
+                                        check = true;
+                                    }else{
+                                        i.setComplete(!i.isComplete());
+                                        database.SQLQuery("DELETE FROM CongViec WHERE Id  = '"+i.getId()+"'");
+                                        String query = "INSERT INTO HoanThanh VALUES(null,'"+i.getDate()+"','"+i.getTime_start()+"','"+i.getTime_end()+"','"+i.getSubject()+"','"+i.getContent()+"','"+i.isComplete()+"')";
+                                        database.SQLQuery(query);
+                                        getData(dayshow.getText().toString());
+                                        delNotification(i);
+                                    }
+                                }
+//
+//
+//
+//                        database.SQLQuery("DELETE FROM CongViec WHERE Id  = '"+i.getId()+"'");
+//                        String query = "INSERT INTO HoanThanh VALUES(null,'"+i.getDate()+"','"+i.getTime_start()+"','"+i.getTime_end()+"','"+i.getSubject()+"','"+i.getContent()+"','"+i.isComplete()+"')";
+//                        database.SQLQuery(query);
+//                        delNotification(i);
+                            }
+                            if(check){
+                                Toast.makeText(MainActivity.this,"Các công việc chưa đến thời gian không thể hoàn thành", Toast.LENGTH_SHORT).show();
                             }
                             getData(dayshow.getText().toString());
                         }
@@ -622,6 +640,7 @@ public class MainActivity extends AppCompatActivity {
                                 String query = "INSERT INTO HoanThanh VALUES(null,'"+job.getDate()+"','"+job.getTime_start()+"','"+job.getTime_end()+"','"+job.getSubject()+"','"+job.getContent()+"','"+job.isComplete()+"')";
                                 database.SQLQuery(query);
                                 getData(dayshow.getText().toString());
+                                delNotification(job);
                             }
                         }
                     }
@@ -656,6 +675,7 @@ public class MainActivity extends AppCompatActivity {
                                 String query = "INSERT INTO History VALUES(null,'"+job.getDate()+"','"+job.getTime_start()+"','"+job.getTime_end()+"','"+job.getSubject()+"','"+job.getContent()+"','"+job.isComplete()+"')";
                                 database.SQLQuery(query);
                                 getData(dayshow.getText().toString());
+                                delNotification(job);
                             }
                         });
                         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -809,6 +829,7 @@ public class MainActivity extends AppCompatActivity {
                             String delete = "DELETE FROM CongViec WHERE Id  = '"+job.getId()+"'";
                             database.SQLQuery(delete);
                             getData(dayshow.getText().toString());
+                            delNotification(job);
                             dialog.dismiss();
                         }
                     });
@@ -823,36 +844,6 @@ public class MainActivity extends AppCompatActivity {
             });
             return row;
         }
-    }
-    // Thông báo cho người dùng sắp có công việc
-    public void notice()  {
-        NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(this);
-        // Thông báo sẽ tự động bị hủy khi người dùng click vào Panel
-        notBuilder.setAutoCancel(true);
-        // --------------------------
-        // Chuẩn bị một thông báo
-        // --------------------------
-        notBuilder.setSmallIcon(R.mipmap.calender);
-        notBuilder.setTicker("This is a ticker");
-
-        // Sét đặt thời điểm sự kiện xẩy ra.
-        // Các thông báo trên Panel được sắp xếp bởi thời gian này.
-        notBuilder.setWhen(System.currentTimeMillis()+ 10* 1000);
-        notBuilder.setContentTitle("Nhắc nhở");
-        notBuilder.setContentText("Còn .. để đến công việc tiếp theo, hãy vào để xem");
-        // Tạo một Intent
-        Intent intent = new Intent(this, MainActivity.class);
-        // PendingIntent.getActivity(..) sẽ start mới một Activity và trả về
-        // đối tượng PendingIntent.
-        // Nó cũng tương đương với gọi Context.startActivity(Intent).
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, MY_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        notBuilder.setContentIntent(pendingIntent);
-        // Lấy ra dịch vụ thông báo (Một dịch vụ có sẵn của hệ thống).
-        NotificationManager notificationService  = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
-        // Xây dựng thông báo và gửi nó lên hệ thống.
-        Notification notification =  notBuilder.build();
-        notificationService.notify(MY_NOTIFICATION_ID, notification);
-
     }
     class SpinnerHolder {
         TextView name;
@@ -899,12 +890,18 @@ public class MainActivity extends AppCompatActivity {
             return convertView;
         }
     }
-   public static  class AlarmRecevier1 extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-           // notice();
-            Log.e("ok1", "ok");
-        }
+    // Hàm hủy thông báo khi xóa hoặc đánh dấu hoàn thành công việc
+    public void delNotification(Job job){
+        AlarmManager alarmManager;
+        PendingIntent pendingIntent;
+        // Hủy thông báo công việc
+        String[] arrDay  = job.getDate().split("/");
+        String[] arrTime = job.getTime_start().split(":");
+        int code         = Integer.parseInt(arrDay[0]+arrDay[1]+arrTime[0]+arrTime[1]);
+        alarmManager= (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent intentAlarm = new Intent(MainActivity.this,AlarmRecevier.class);
+        pendingIntent = PendingIntent.getBroadcast(MainActivity.this, code, intentAlarm,PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pendingIntent);
     }
 }
 

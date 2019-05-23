@@ -104,10 +104,18 @@ public class ChartActivity extends AppCompatActivity {
             listDay.set(i,listDay.get(i).substring(0,5));
         }
         //drawChart(listFilter, countJobType);
+        c_de.setTextColor(Color.GREEN);
+        c_all.setTextColor(Color.BLACK);
+        c_fi.setTextColor(Color.BLACK);
+        c_un.setTextColor(Color.BLACK);
         drawChartDay(listDay, countJobDay, countFinished, countUnfinshed,true,true,true);
         c_de.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                c_de.setTextColor(Color.GREEN);
+                c_all.setTextColor(Color.BLACK);
+                c_fi.setTextColor(Color.BLACK);
+                c_un.setTextColor(Color.BLACK);
                 drawChartDay(listDay, countJobDay, countFinished, countUnfinshed,true,true,true);
             }
         });
@@ -115,6 +123,10 @@ public class ChartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 titel.setText("Biểu đồ tất cả công việc hiện có");
+                c_de.setTextColor(Color.BLACK);
+                c_all.setTextColor(Color.GREEN);
+                c_fi.setTextColor(Color.BLACK);
+                c_un.setTextColor(Color.BLACK);
                 drawChartDay(listDay, countJobDay, countFinished, countUnfinshed,true,false,false);
             }
         });
@@ -122,6 +134,10 @@ public class ChartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 titel.setText("Biểu đồ sô lượng công việc đã hoàn thành");
+                c_de.setTextColor(Color.BLACK);
+                c_all.setTextColor(Color.BLACK);
+                c_fi.setTextColor(Color.GREEN);
+                c_un.setTextColor(Color.BLACK);
                 drawChartDay(listDay, countJobDay, countFinished, countUnfinshed,false,true,false);
             }
         });
@@ -129,6 +145,10 @@ public class ChartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 titel.setText("Biểu đồ sô lượng công việc chưa hoàn thành");
+                c_de.setTextColor(Color.BLACK);
+                c_all.setTextColor(Color.BLACK);
+                c_fi.setTextColor(Color.BLACK);
+                c_un.setTextColor(Color.GREEN);
                 drawChartDay(listDay, countJobDay, countFinished, countUnfinshed,false,false,true);
             }
         });
@@ -157,6 +177,10 @@ public class ChartActivity extends AppCompatActivity {
                     c_un.setVisibility(View.VISIBLE);
                     test1.setVisibility(View.VISIBLE);
                     test2.setVisibility(View.VISIBLE);
+                    c_de.setTextColor(Color.GREEN);
+                    c_all.setTextColor(Color.BLACK);
+                    c_fi.setTextColor(Color.BLACK);
+                    c_un.setTextColor(Color.BLACK);
                     drawChartDay(listDay, countJobDay, countFinished, countUnfinshed,true,true,true);
                     m=true;
                 }

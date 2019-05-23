@@ -1,8 +1,10 @@
 package com.example.enterc.workmanager;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -83,17 +85,7 @@ public class CompleteJob extends AppCompatActivity {
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         calendar.set(year,month,dayOfMonth);
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                       // int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
                         day_complete.setText(simpleDateFormat.format(calendar.getTime()));
-//                        switch (dayOfWeek){
-//                            case 2: label_today.setText("Thứ hai"); break;
-//                            case 3: label_today.setText("Thứ ba"); break;
-//                            case 4: label_today.setText("Thứ tư"); break;
-//                            case 5: label_today.setText("Thứ năm"); break;
-//                            case 6: label_today.setText("Thứ sáu"); break;
-//                            case 7: label_today.setText("Thứ bảy"); break;
-//                            default: label_today.setText("Chủ nhật"); break;
-//                        }
                         getData(day_complete.getText().toString());
                     }
                 }, year,month,day);
@@ -275,6 +267,26 @@ public class CompleteJob extends AppCompatActivity {
                                 String query = "INSERT INTO CongViec VALUES(null,'"+job.getDate()+"','"+job.getTime_start()+"','"+job.getTime_end()+"','"+job.getSubject()+"','"+job.getContent()+"','"+job.isComplete()+"')";
                                 database.SQLQuery(query);
                                 getData(day_complete.getText().toString());
+                                Calendar calendar = Calendar.getInstance();
+                                AlarmManager alarmManager;
+                                PendingIntent pendingIntent;
+                                String[] arrDay = job.getDate().split("/");
+                                String[] arrTime = job.getTime_start().split(":");
+                                final int y = Integer.parseInt(arrDay[2]);
+                                final int m = Integer.parseInt(arrDay[1])-1;
+                                final int d = Integer.parseInt(arrDay[0]);
+                                int h       = Integer.parseInt(arrTime[0]);
+                                int mi      = Integer.parseInt(arrTime[1]);
+                                calendar.set(y,m,d,h,mi);
+                                int codePending = Integer.parseInt(arrDay[0]+arrDay[1]+arrTime[0]+arrTime[1]);
+                                // Thông báo công việc gần nhất
+                                alarmManager= (AlarmManager) getSystemService(ALARM_SERVICE);
+                                Intent intentAlarm = new Intent(CompleteJob.this,AlarmRecevier.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("nameSubject",job.getSubject());
+                                intentAlarm.putExtra("nameBundle", bundle);
+                                pendingIntent = PendingIntent.getBroadcast(CompleteJob.this, codePending, intentAlarm,PendingIntent.FLAG_UPDATE_CURRENT);
+                                alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(), pendingIntent);
                             }
                         });
                         builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
