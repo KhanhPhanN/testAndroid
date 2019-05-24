@@ -199,9 +199,7 @@ public class CompleteJob extends AppCompatActivity {
         choose.clear();
         for(Job i: model){
             if(i.getDate().equals(day) && i.getSubject().equals(f)){
-                Log.d("XXX",i.toString());
                 choose.add(i);
-                //jobAdapter.notifyDataSetChanged();
             }
         }
         Collections.sort(choose, new compareToJob());
@@ -219,8 +217,6 @@ public class CompleteJob extends AppCompatActivity {
 
         public JobAdapter(Context context, int layout, List<Job> list) {
             super(context, layout,list);
-            // super(MainActivity.this, R.layout.job_row, model);
-
         }
 
         @NonNull
@@ -229,15 +225,15 @@ public class CompleteJob extends AppCompatActivity {
             JobHolder jobHolder;
             View row = convertView;
             if(row==null){
-                LayoutInflater inflater  = getLayoutInflater();
-                row                      = inflater.inflate(R.layout.done_row, parent, false);
-                jobHolder                = new JobHolder();
-                jobHolder.subject_complete            = row.findViewById(R.id.subject_complete);
-                jobHolder.time_detail    = row.findViewById(R.id.time_detail_complete);
-                jobHolder.type_complete   = row.findViewById(R.id.type_complete);
-                jobHolder.call_back       = row.findViewById(R.id.come_back);
-                jobHolder.important      = row.findViewById(R.id.done_important);
-                final Job job            = choose.get(position);
+                LayoutInflater inflater        = getLayoutInflater();
+                row                            = inflater.inflate(R.layout.done_row, parent, false);
+                jobHolder                      = new JobHolder();
+                jobHolder.subject_complete     = row.findViewById(R.id.subject_complete);
+                jobHolder.time_detail          = row.findViewById(R.id.time_detail_complete);
+                jobHolder.type_complete        = row.findViewById(R.id.type_complete);
+                jobHolder.call_back            = row.findViewById(R.id.come_back);
+                jobHolder.important            = row.findViewById(R.id.done_important);
+                final Job job                  = choose.get(position);
                 switch (job.getSubject()){
                     case "Cuộc họp" :   jobHolder.type_complete.setImageResource(R.drawable.meeting); break;
                     case "Du lịch"  :   jobHolder.type_complete.setImageResource(R.drawable.travel); break;
@@ -255,44 +251,24 @@ public class CompleteJob extends AppCompatActivity {
                 }
                 jobHolder.time_detail.setText(job.getTime_start().toString() + "--" + job.getTime_end().toString());
                 jobHolder.subject_complete.setText(job.getSubject());
-                jobHolder.call_back.setOnClickListener(new View.OnClickListener() {
+                jobHolder.call_back.setOnClickListener(new View.OnClickListener() {// Đặt sự kiện quay lại cho từng công việc
                     @Override
-                    public void onClick(View v) {                        AlertDialog.Builder builder = new AlertDialog.Builder(CompleteJob.this);
-                        builder.setMessage("Bạn có chắc chắn chưa hoàn thành công việc này không");
-                        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(CompleteJob.this);// Khai báo 1 cửa sổ để xác nhận người dùng
+                        builder.setMessage("Bạn có chắc chắn chưa hoàn thành công việc này không"); // Đặt câu hỏi cho người dùng
+                        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {// Người dùng xác nhận đồng ý
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                database.SQLQuery("DELETE FROM HoanThanh WHERE Id  = '"+job.getId()+"'");
-                                //Job job = new Job(date, time_start, time_end, sub, cont, false);
-                                String query = "INSERT INTO CongViec VALUES(null,'"+job.getDate()+"','"+job.getTime_start()+"','"+job.getTime_end()+"','"+job.getSubject()+"','"+job.getContent()+"','"+job.isComplete()+"')";
-                                database.SQLQuery(query);
-                                getData(day_complete.getText().toString());
-                                Calendar calendar = Calendar.getInstance();
-                                AlarmManager alarmManager;
-                                PendingIntent pendingIntent;
-                                String[] arrDay = job.getDate().split("/");
-                                String[] arrTime = job.getTime_start().split(":");
-                                final int y = Integer.parseInt(arrDay[2]);
-                                final int m = Integer.parseInt(arrDay[1])-1;
-                                final int d = Integer.parseInt(arrDay[0]);
-                                int h       = Integer.parseInt(arrTime[0]);
-                                int mi      = Integer.parseInt(arrTime[1]);
-                                calendar.set(y,m,d,h,mi);
-                                int codePending = Integer.parseInt(arrDay[0]+arrDay[1]+arrTime[0]+arrTime[1]);
-                                // Thông báo công việc gần nhất
-                                alarmManager= (AlarmManager) getSystemService(ALARM_SERVICE);
-                                Intent intentAlarm = new Intent(CompleteJob.this,AlarmRecevier.class);
-                                Bundle bundle = new Bundle();
-                                bundle.putString("nameSubject",job.getSubject());
-                                intentAlarm.putExtra("nameBundle", bundle);
-                                pendingIntent = PendingIntent.getBroadcast(CompleteJob.this, codePending, intentAlarm,PendingIntent.FLAG_UPDATE_CURRENT);
-                                alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(), pendingIntent);
+                                database.SQLQuery("DELETE FROM HoanThanh WHERE Id  = '"+job.getId()+"'");// Xóa dữ liệu trong CSDL
+                                String query = "INSERT INTO CongViec VALUES(null,'"+job.getDate()+"','"+job.getTime_start()+"','"+job.getTime_end()+"','"+job.getSubject()+"','"+job.getContent()+"','"+job.isComplete()+"')";// Lệnh thêm lại công việc vào CSDL
+                                database.SQLQuery(query);// Thực hiện lệnh thêm vào CSDL
+                                getData(day_complete.getText().toString()); // Lấy dữ liệu từ CSDL và đổ lại lên danh sách
                             }
                         });
-                        builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                        builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {// Nếu không đồng ý xác nhận
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
+                             // Không làm gì cả
                             }
                         });
                         builder.show();

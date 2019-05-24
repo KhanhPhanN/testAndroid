@@ -34,6 +34,7 @@ public class HistoryJob extends AppCompatActivity {
     ListView listView;
     Button del_history;
     TextView havenotdone;
+    AlarmNotification alarmNotification;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
@@ -53,6 +54,7 @@ public class HistoryJob extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Lịch sử"); //Thiết lập tiêu đề nếu muốn
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        alarmNotification = new AlarmNotification(HistoryJob.this);
         choose = new ArrayList<>();
         database = new Database(this, "database", null, 1);
         listView = findViewById(R.id.list_history);
@@ -120,44 +122,25 @@ public class HistoryJob extends AppCompatActivity {
                 jobHolder.call_back.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(HistoryJob.this);
-                        builder.setMessage("Bạn có chắc chắn chưa hoàn thành công việc này không");
-                        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(HistoryJob.this);// Khai báo 1 cửa sổ để xác nhận người dùng
+                        builder.setMessage("Bạn có chắc chắn chưa hoàn thành công việc này không?");// Thiết lập câu hỏi cho người dùng
+                        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {// Nếu người dùng đôngg ý xác nhận
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                database.SQLQuery("DELETE FROM History WHERE Id  = '"+job.getId()+"'");
-                                String query = "INSERT INTO CongViec VALUES(null,'"+job.getDate()+"','"+job.getTime_start()+"','"+job.getTime_end()+"','"+job.getSubject()+"','"+job.getContent()+"','"+job.isComplete()+"')";
-                                database.SQLQuery(query);
-                                getData();
-                                Calendar calendar = Calendar.getInstance();
-                                AlarmManager alarmManager;
-                                PendingIntent pendingIntent;
-                                String[] arrDay = job.getDate().split("/");
-                                String[] arrTime = job.getTime_start().split(":");
-                                final int y = Integer.parseInt(arrDay[2]);
-                                final int m = Integer.parseInt(arrDay[1])-1;
-                                final int d = Integer.parseInt(arrDay[0]);
-                                int h       = Integer.parseInt(arrTime[0]);
-                                int mi      = Integer.parseInt(arrTime[1]);
-                                calendar.set(y,m,d,h,mi);
-                                int codePending = Integer.parseInt(arrDay[0]+arrDay[1]+arrTime[0]+arrTime[1]);
-                                // Thông báo công việc gần nhất
-                                alarmManager= (AlarmManager) getSystemService(ALARM_SERVICE);
-                                Intent intentAlarm = new Intent(HistoryJob.this,AlarmRecevier.class);
-                                Bundle bundle = new Bundle();
-                                bundle.putString("nameSubject",job.getSubject());
-                                intentAlarm.putExtra("nameBundle", bundle);
-                                pendingIntent = PendingIntent.getBroadcast(HistoryJob.this, codePending, intentAlarm,PendingIntent.FLAG_UPDATE_CURRENT);
-                                alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(), pendingIntent);
+                                database.SQLQuery("DELETE FROM History WHERE Id  = '"+job.getId()+"'"); // Xóa dữ liệu trong CSDL
+                                String query = "INSERT INTO CongViec VALUES(null,'"+job.getDate()+"','"+job.getTime_start()+"','"+job.getTime_end()+"','"+job.getSubject()+"','"+job.getContent()+"','"+job.isComplete()+"')";// Lệnh thêm vào CSDL
+                                database.SQLQuery(query);// Thực hiện lệnh thêm vào CSDL
+                                getData();// Đọc dữ liệu từ CSDL và đổ lại lên danh sách
+                                alarmNotification.Notification(job, HistoryJob.this);// Thiết lập lại thông báo cho công việc được qua trở lại
                             }
                         });
-                        builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                        builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {// Nếu người dùng không xác nhận
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
+                                // Không làm gì hết
                             }
                         });
-                        builder.show();
+                        builder.show();// Hiển thị cửa sổ để người dùng thực hiện các chức năng
                     }
                 });
                 row.setTag(jobHolder);

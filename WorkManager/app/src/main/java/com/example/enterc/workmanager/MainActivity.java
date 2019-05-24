@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     List<String> list, filterl;
     Button del_all, done_all;
     int check_im = 3;
-    int CODE = 0;
+    AlarmNotification alarmNotification;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         new MenuInflater(this).inflate(R.menu.option,menu);
@@ -91,182 +91,164 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
     public void addJob() {
-
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // Bỏ tiêu đề
-        dialog.setContentView(R.layout.add_work);
-        dialog.show();
-        ImageView calender = dialog.findViewById(R.id.add_calender);
-        ImageView time_start = dialog.findViewById(R.id.add_time_start);
-        ImageView time_end = dialog.findViewById(R.id.add_time_end);
-        final EditText show_calender = dialog.findViewById(R.id.show_calender);
-        final EditText show_time_start = dialog.findViewById(R.id.show_time_start);
-        final EditText show_time_end = dialog.findViewById(R.id.show_time_end);
-        final ImageView subject = dialog.findViewById(R.id.imagesub);
-        final Spinner spinner                 = dialog.findViewById(R.id.item_subject);
-        final EditText content = dialog.findViewById(R.id.add_content);
-        Button save = dialog.findViewById(R.id.save);
-        Button cancel = dialog.findViewById(R.id.cancel);
-        final ImageView add_important = dialog.findViewById(R.id.add_important);
-        list.clear();
-        list.add("Cuộc họp");
-        list.add("Du lịch");
-        list.add("Sinh nhật");
-        list.add("Cà phê");
-        list.add("Hằng ngày");
-        list.add("Khác");
-        SpinnerAdapterA adapter = new SpinnerAdapterA(MainActivity.this, R.layout.layout_spinner, list);
-        adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        final Dialog dialog = new Dialog(this);// Khai báo 1 cửa sổ để thêm công việc
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // Bỏ tiêu đề cho cửa sổ này
+        dialog.setContentView(R.layout.add_work);// Tham chiếu đến layout add_work
+        dialog.show();// Hiển thị cửa sổ
+        ImageView calender             = dialog.findViewById(R.id.add_calender);   // Tham chiếu đến hình ảnh lịch
+        ImageView time_start           = dialog.findViewById(R.id.add_time_start); // Tham chiếu đến hình ảnh đồng hồ
+        ImageView time_end             = dialog.findViewById(R.id.add_time_end);   // Tham chiếu đến hình ảnh đồng hồ
+        final EditText show_calender   = dialog.findViewById(R.id.show_calender);  // Tham chiếu đến ô nhập ngày
+        final EditText show_time_start = dialog.findViewById(R.id.show_time_start);// Tham chiếu đến ô nhập thời gian bắt đầu
+        final EditText show_time_end   = dialog.findViewById(R.id.show_time_end);  // Tham chiếu đến ô nhập thời gian kết thúc
+        final ImageView subject        = dialog.findViewById(R.id.imagesub);       // Tham chiếu đến hình ảnh tương ứng cho các chủ đề
+        final Spinner spinner          = dialog.findViewById(R.id.item_subject);   // Tham chiếu đến spinner để lựa chọn chủ đề
+        final EditText content         = dialog.findViewById(R.id.add_content);    // Tham chiếu đến ô nhập nội dung chi tiết công việc
+        Button save                    = dialog.findViewById(R.id.save);           // Tham chiếu đến nút dùng để lưu công việc
+        Button cancel                  = dialog.findViewById(R.id.cancel);         // Tham chiếu đến nút dùng để tắt cửa sổ thêm và không làm gì cả
+        final ImageView add_important  = dialog.findViewById(R.id.add_important);  // Tham chiếu đến hình ảnh để đánh dấu mức độ quan trọng công việc
+        list.clear();           // Xóa mảng list
+        list.add("Cuộc họp");   // Thêm chủ đề cuộc họp
+        list.add("Du lịch");    // Thêm chủ đề du lịch
+        list.add("Sinh nhật");  // Thêm chủ đề sinh nhật
+        list.add("Cà phê");     // Thêm chủ đề cà phê
+        list.add("Hằng ngày");  // Thêm chủ đề hằng ngày
+        list.add("Khác");       // Thêm chủ đề khác
+        SpinnerAdapterA adapter = new SpinnerAdapterA(MainActivity.this, R.layout.layout_spinner, list);// Khai báo 1 apdapter sử dụng cho Spinner
+        adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);                       // Khai báo kiểu danh sách cho Spinner
+        spinner.setAdapter(adapter); // áp dụng adapter cho Spinner
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {// Đặt sự kiện cho Spinner khi chọn 1 phần tử trong danh sách
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                //Toast.makeText(MainActivity.this, spinner.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
                 switch (i){
-                    case 0:   subject.setImageResource(R.drawable.meeting); break;
-                    case 1:   subject.setImageResource(R.drawable.travel); break;
-                    case 2:   subject.setImageResource(R.drawable.birth); break;
-                    case 3:   subject.setImageResource(R.drawable.tea); break;
-                    case 4:   subject.setImageResource(R.drawable.daily); break;
-                    default:  subject.setImageResource(R.drawable.diference); break;
+                    case 0:   subject.setImageResource(R.drawable.meeting); break;   // Nếu lựa chọn chủ đề là cuộc họp
+                    case 1:   subject.setImageResource(R.drawable.travel); break;    // Nếu lựa chọn chủ đề là du lịch
+                    case 2:   subject.setImageResource(R.drawable.birth); break;     // Nếu lựa chọn chủ đề là sinh nhật
+                    case 3:   subject.setImageResource(R.drawable.tea); break;       // Nếu lựa chọn chủ đề là cà phê
+                    case 4:   subject.setImageResource(R.drawable.daily); break;     // Nếu lựa chọn chủ đề là hằng ngày
+                    default:  subject.setImageResource(R.drawable.diference); break; // Nếu lựa chọn chủ đề là khác
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+            public void onNothingSelected(AdapterView<?> adapterView) {// Đặt sự kiện nếu không chọn phần tử nào trong Spinner
 
             }
         });
-        final Calendar calendar = Calendar.getInstance();
-        show_calender.setText(dayshow.getText().toString());
+        final Calendar calendar = Calendar.getInstance();    // Khai báo 1 đối tượng Calendar để lấy danh sách ngày
+        show_calender.setText(dayshow.getText().toString()); // Hiển thị ngày mặc định
         // chọn lịch
         calender.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                int day = calendar.get(Calendar.DATE);
-                int month = calendar.get(Calendar.MONTH);
-                int year = calendar.get(Calendar.YEAR);
-                DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+            public void onClick(View v) {// Đặt sự kiện khi chọn ngày
+                int day   = calendar.get(Calendar.DATE);  // Lấy ngày hiện tại
+                int month = calendar.get(Calendar.MONTH); // Lấy tháng hiện tại
+                int year  = calendar.get(Calendar.YEAR);  // Lấy năm hiện tại
+                DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() { // Đặt sự kiện chọn ngày qua đối tượng DatePickerDialog
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        calendar.set(year, month, dayOfMonth);
-                        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                        show_calender.setText(simpleDateFormat.format(calendar.getTime()));
+                        calendar.set(year, month, dayOfMonth); // Hiển thị ngày trong lịch là ngày tháng năm hiện tại của hệ thống
+                        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy"); // Định dạng lại cách hiển thị ngày
+                        show_calender.setText(simpleDateFormat.format(calendar.getTime())); // Hiển thị ngày được chọn trên ô nhập ngày
                     }
                 }, year, month, day);
-                datePickerDialog.show();
+                datePickerDialog.show();// Hiển thị lịch cho người dùng thực hiện các sự kiện được đặt ở trên
             }
         });
         // chọn thời gian bắt đầu
-        final Calendar[] calendarOne = new Calendar[1];
-        time_start.setOnClickListener(new View.OnClickListener() {
+        final Calendar[] calendarOne = new Calendar[1];           // Khai báo đối tượng Calendar toàn cục trong hàm để sử dụng cho thông báo
+        time_start.setOnClickListener(new View.OnClickListener() {// Đặt sự kiện cho việc chọn thời gian bắt đầu
             @Override
             public void onClick(View v) {
-                calendarOne[0] = Calendar.getInstance();
-                String[] arr = show_calender.getText().toString().split("/");
-                final int y = Integer.parseInt(arr[2]);
-                final int m = Integer.parseInt(arr[1])-1;
-                final int d = Integer.parseInt(arr[0]);
-                final int hour_start = calendarOne[0].get(Calendar.HOUR_OF_DAY);
-                int minute_start = calendarOne[0].get(Calendar.MINUTE);
+                calendarOne[0]       = Calendar.getInstance();// Gán giá trị cho đối tượng Calendar
+                String[] arr         = show_calender.getText().toString().split("/"); // Cắt chuỗi để lấy giá trị ngày tháng năm hiện tại được chọn
+                final int y          = Integer.parseInt(arr[2]);   // Lấy năm đang được chọn
+                final int m          = Integer.parseInt(arr[1])-1; // Lấy tháng đang được chọn
+                final int d          = Integer.parseInt(arr[0]);   // Lấy ngày đang được chọn
+                final int hour_start = calendarOne[0].get(Calendar.HOUR_OF_DAY); // Lấy giờ trong ngày
+                int minute_start     = calendarOne[0].get(Calendar.MINUTE);      // Lấy phút trong ngày
                 TimePickerDialog datePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
+                    @Override// Đặt sự kiện lấy thời gian qua TimePickerDialog
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        calendarOne[0].set(y, m, d, hourOfDay, minute);
-                        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-                        show_time_start.setText(simpleDateFormat.format(calendarOne[0].getTime()));
+                        calendarOne[0].set(y, m, d, hourOfDay, minute); // Đặt thời gian mặc định là giờ, phút của ngày tháng năm được chọn
+                        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm"); // Định dạng giờ và phút hiển thị
+                        show_time_start.setText(simpleDateFormat.format(calendarOne[0].getTime())); // Hiển thị thời gian trên ô bắt đầu
                     }
                 }, hour_start, minute_start, true);
-                datePickerDialog.show();
+                datePickerDialog.show(); // Hiển thị TimePickerDialog để người dùng thực hiện các sự kiện
             }
         });
-
-
         // chọn thời gian kết thúc
-        time_end.setOnClickListener(new View.OnClickListener() {
+        time_end.setOnClickListener(new View.OnClickListener() {// Đặt sự kiện chọn thời gian kết thúc
             @Override
             public void onClick(View v) {
-                final Calendar calendar = Calendar.getInstance();
-                final int hour_start = calendar.get(Calendar.HOUR_OF_DAY);
-                int minute_start = calendar.get(Calendar.MINUTE);
+                final Calendar calendar = Calendar.getInstance();             // Khai báo và gán giá trị cho 1 đối tượng Calendar
+                final int hour_start    = calendar.get(Calendar.HOUR_OF_DAY); // Lấy giờ hiện tại trong ngày
+                int minute_start        = calendar.get(Calendar.MINUTE);      // Lấy phút hiện tại trong ngày
                 TimePickerDialog datePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        calendar.set(0, 0, 0, hourOfDay, minute);
-                        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-                        show_time_end.setText(simpleDateFormat.format(calendar.getTime()));
+                        calendar.set(0, 0, 0, hourOfDay, minute);// Đặt thời gian mặc định là giờ, phút hiện tại cảu hệ thống
+                        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm"); // Định dạng lại giờ và phút hiển thị
+                        show_time_end.setText(simpleDateFormat.format(calendar.getTime())); // Hiển thị thời gian được chọn lên ô kết thúc
                     }
                 }, hour_start, minute_start, true);
-                datePickerDialog.show();
+                datePickerDialog.show(); // Hiển thị TimePickerDialog cho người dùng để thực hiện các sự kiện
             }
         });
-        final boolean[] check_important = {false};
-        add_important.setOnClickListener(new View.OnClickListener() {
+        final boolean[] check_important = {false};// Khai báo 1 biến boolean để kiểm tra sự kiện là quan trong hay không quan trọng
+        add_important.setOnClickListener(new View.OnClickListener() {// Đặt sự kiện để kiểm tra mức độ công việc
             @Override
             public void onClick(View v) {
-                check_important[0] = !check_important[0];
-                if(check_important[0]){
-                    add_important.setImageResource(R.drawable.importantyellow);
-                    Toast.makeText(MainActivity.this, "Quan trọng", Toast.LENGTH_SHORT).show();
+                check_important[0] = !check_important[0];// Tự động đảo ngược
+                if(check_important[0]){// Nếu công việc là quan trọng
+                    add_important.setImageResource(R.drawable.importantyellow); // Hiển thị biểu tượng quan trọng
+                    Toast.makeText(MainActivity.this, "Quan trọng", Toast.LENGTH_SHORT).show(); // Thông báo ngắn cho người dùng
                 }else{
-                    add_important.setImageResource(R.drawable.important);
-                    Toast.makeText(MainActivity.this, "Không quan trọng", Toast.LENGTH_SHORT).show();
+                    add_important.setImageResource(R.drawable.important); // Hiển thị biểu tượng không quan trọng
+                    Toast.makeText(MainActivity.this, "Không quan trọng", Toast.LENGTH_SHORT).show();// Thông báo ngắn cho người dùng
                 }
             }
         });
         // Lưu thông tin công việc
-        save.setOnClickListener(new View.OnClickListener() {
+        save.setOnClickListener(new View.OnClickListener() { // Đặt dự kiện lưu thông tin công việc cào cơ sở dữ liệu
             @Override
             public void onClick(View v) {
-                String date = show_calender.getText().toString();
-                String time_start = show_time_start.getText().toString();
-                String time_end = show_time_end.getText().toString();
-                String sub = spinner.getSelectedItem().toString();
-                String cont = content.getText().toString();
-                if (!inputCheck.isValidDate(date)) {
-                    Toast.makeText(MainActivity.this, getResources().getText(R.string.dateformat1), Toast.LENGTH_SHORT).show();
-                } else if (inputCheck.isValidTime(time_start) == 1 || inputCheck.isValidTime(time_end) == 1) {
-                    Toast.makeText(MainActivity.this, getResources().getText(R.string.timeformat1), Toast.LENGTH_SHORT).show();
-                } else if (inputCheck.isValidTime(time_start) == 2 || inputCheck.isValidTime(time_end) == 2) {
-                    Toast.makeText(MainActivity.this, getResources().getText(R.string.timeformat2), Toast.LENGTH_SHORT).show();
-                } else if (inputCheck.isValidTime(time_start) == 3 || inputCheck.isValidTime(time_end) == 3) {
-                    Toast.makeText(MainActivity.this, getResources().getText(R.string.timeformat3), Toast.LENGTH_SHORT).show();
-                } else if (!inputCheck.isEndthanStart(time_start, time_end)) {
-                    Toast.makeText(MainActivity.this, getResources().getText(R.string.startthanend), Toast.LENGTH_SHORT).show();
-                } else if (cont.length() == 0) {
-                    Toast.makeText(MainActivity.this, getResources().getText(R.string.contentWrong), Toast.LENGTH_SHORT).show();
-                } else {
-                    String query = "INSERT INTO CongViec VALUES(null,'"+date+"','"+time_start+"','"+time_end+"','"+sub+"','"+cont+"','"+check_important[0]+"')";
-                    database.SQLQuery(query);
-                    getData(dayshow.getText().toString());
+                String date       = show_calender.getText().toString();  // Lấy dữ liệu tại ô chọn ngày
+                String time_start = show_time_start.getText().toString();// Lấy dữ liệu tại ô thời gian bắt đầu
+                String time_end   = show_time_end.getText().toString();  // Lấy dữ liệu tại ô thời gian kết thúc
+                String sub        = spinner.getSelectedItem().toString();// Lấy dữ liệu phần tử của Spinner
+                String cont       = content.getText().toString();        // Lấy dữ liệu nội dung chi tiết công việc
+                if (!inputCheck.isValidDate(date)) { // Kiểm tra ngày có hợp lệ không
+                    Toast.makeText(MainActivity.this, getResources().getText(R.string.dateformat1), Toast.LENGTH_SHORT).show(); // Nếu không sẽ thông báo
+                } else if (inputCheck.isValidTime(time_start) == 1 || inputCheck.isValidTime(time_end) == 1) {     // Kiểm tra thời gian có hợp lệ không
+                    Toast.makeText(MainActivity.this, getResources().getText(R.string.timeformat1), Toast.LENGTH_SHORT).show();// Nếu không sẽ thông báo
+                } else if (inputCheck.isValidTime(time_start) == 2 || inputCheck.isValidTime(time_end) == 2) { // Kiểm tra thời gian có hợp lệ không
+                    Toast.makeText(MainActivity.this, getResources().getText(R.string.timeformat2), Toast.LENGTH_SHORT).show();// Nếu không sẽ thông báo
+                } else if (inputCheck.isValidTime(time_start) == 3 || inputCheck.isValidTime(time_end) == 3) {// Kiểm tra thời gian có hợp lệ không
+                    Toast.makeText(MainActivity.this, getResources().getText(R.string.timeformat3), Toast.LENGTH_SHORT).show();// Nếu không sẽ thông báo
+                } else if (!inputCheck.isEndthanStart(time_start, time_end)) {// Kiểm tra thời gian có hợp lệ không
+                    Toast.makeText(MainActivity.this, getResources().getText(R.string.startthanend), Toast.LENGTH_SHORT).show();// Nếu không sẽ thông báo
+                } else if (cont.length() == 0) { // Kiểm tra nội dung chi tiết không được phép để trống
+                    Toast.makeText(MainActivity.this, getResources().getText(R.string.contentWrong), Toast.LENGTH_SHORT).show(); // Nếu lỗi sẽ có thông báo
+                } else {// Nếu thỏa mãn mọi điều kiện
+                    String query = "INSERT INTO CongViec VALUES(null,'"+date+"','"+time_start+"','"+time_end+"','"+sub+"','"+cont+"','"+check_important[0]+"')";// Lệnh thêm công việc vào CSDL
+                    database.SQLQuery(query); // Thực hiện thêm công việc vào CSDL
+                    getData(dayshow.getText().toString()); // Lấy dữ liệu trong CSDL rồi đổ lên danh sách
                     // Cài đặt thông báo
-                    AlarmManager alarmManager;
-                    PendingIntent pendingIntent;
-                    String[] arrDay = date.split("/");
-                    String[] arrTime = time_start.split(":");
-                    int codePending = Integer.parseInt(arrDay[0]+arrDay[1]+arrTime[0]+arrTime[1]);
-                    // Thông báo công việc gần nhất
-                    alarmManager= (AlarmManager) getSystemService(ALARM_SERVICE);
-                    Intent intentAlarm = new Intent(MainActivity.this,AlarmRecevier.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("nameSubject",sub);
-                    intentAlarm.putExtra("nameBundle", bundle);
-                    pendingIntent = PendingIntent.getBroadcast(MainActivity.this, codePending, intentAlarm,PendingIntent.FLAG_UPDATE_CURRENT);
-                    alarmManager.set(AlarmManager.RTC_WAKEUP,calendarOne[0].getTimeInMillis(), pendingIntent);
+                     alarmNotification.Notification(new Job(1, date, time_start,time_end,sub,cont, check_important[0]), MainActivity.this);
                     // Hết thông báo
-                    dialog.dismiss();
+                    dialog.dismiss();// Đóng cửa sổ thêm công việc
                 }
             }
         });
-
         // Nhấn cancel nếu không muốn làm gì
-        cancel.setOnClickListener(new View.OnClickListener() {
+        cancel.setOnClickListener(new View.OnClickListener() {// Đặt sự kiện nhấn nút hủy bỏ
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                dialog.dismiss(); // Đóng cửa sổ thêm công việc
             }
         });
-
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -278,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setLogo(R.drawable.list);    //Icon muốn hiện thị
         actionBar.setDisplayUseLogoEnabled(true);
+        alarmNotification = new AlarmNotification(MainActivity.this);
         listJobs                = findViewById(R.id.list_jobs);
         dayCalender             = findViewById(R.id.today);
         dayshow                 = findViewById(R.id.day);
@@ -380,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
                                 database.SQLQuery("DELETE FROM CongViec WHERE Id  = '"+i.getId()+"'");
                                 String query = "INSERT INTO History VALUES(null,'"+i.getDate()+"','"+i.getTime_start()+"','"+i.getTime_end()+"','"+i.getSubject()+"','"+i.getContent()+"','"+i.isComplete()+"')";
                                  database.SQLQuery(query);
-                                 delNotification(i);
+                                 alarmNotification.delNotification(i, MainActivity.this);
                             }
                             getData(dayshow.getText().toString());
                         }
@@ -448,16 +431,9 @@ public class MainActivity extends AppCompatActivity {
                                         String query = "INSERT INTO HoanThanh VALUES(null,'"+i.getDate()+"','"+i.getTime_start()+"','"+i.getTime_end()+"','"+i.getSubject()+"','"+i.getContent()+"','"+i.isComplete()+"')";
                                         database.SQLQuery(query);
                                         getData(dayshow.getText().toString());
-                                        delNotification(i);
+                                        alarmNotification.delNotification(i, MainActivity.this);
                                     }
                                 }
-//
-//
-//
-//                        database.SQLQuery("DELETE FROM CongViec WHERE Id  = '"+i.getId()+"'");
-//                        String query = "INSERT INTO HoanThanh VALUES(null,'"+i.getDate()+"','"+i.getTime_start()+"','"+i.getTime_end()+"','"+i.getSubject()+"','"+i.getContent()+"','"+i.isComplete()+"')";
-//                        database.SQLQuery(query);
-//                        delNotification(i);
                             }
                             if(check){
                                 Toast.makeText(MainActivity.this,"Các công việc chưa đến thời gian không thể hoàn thành", Toast.LENGTH_SHORT).show();
@@ -577,11 +553,8 @@ public class MainActivity extends AppCompatActivity {
     }
     // Tạo Adaptẻ cho listview
     class JobAdapter extends ArrayAdapter<Job>{
-
         JobAdapter(Context context, int layout, List<Job> list) {
             super(context, layout,list);
-            // super(MainActivity.this, R.layout.job_row, model);
-
         }
 
         @NonNull
@@ -640,7 +613,7 @@ public class MainActivity extends AppCompatActivity {
                                 String query = "INSERT INTO HoanThanh VALUES(null,'"+job.getDate()+"','"+job.getTime_start()+"','"+job.getTime_end()+"','"+job.getSubject()+"','"+job.getContent()+"','"+job.isComplete()+"')";
                                 database.SQLQuery(query);
                                 getData(dayshow.getText().toString());
-                                delNotification(job);
+                                alarmNotification.delNotification(job, MainActivity.this);
                             }
                         }
                     }
@@ -675,7 +648,7 @@ public class MainActivity extends AppCompatActivity {
                                 String query = "INSERT INTO History VALUES(null,'"+job.getDate()+"','"+job.getTime_start()+"','"+job.getTime_end()+"','"+job.getSubject()+"','"+job.getContent()+"','"+job.isComplete()+"')";
                                 database.SQLQuery(query);
                                 getData(dayshow.getText().toString());
-                                delNotification(job);
+                                alarmNotification.delNotification(job, MainActivity.this);
                             }
                         });
                         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -691,153 +664,95 @@ public class MainActivity extends AppCompatActivity {
             }else{
                 row.getTag();
             }
-            row.setOnClickListener(new View.OnClickListener() {
+            row.setOnClickListener(new View.OnClickListener() {// Đặt sự kiện khi click vào 1 phần tử trong danh sách
                 @Override
                 public void onClick(View v) {
-//                    Toast.makeText(MainActivity.this,position+"",Toast.LENGTH_SHORT).show();
-                    Log.d("TEST",position+"");
-                    final Dialog dialog = new Dialog(MainActivity.this);
+                    final Dialog dialog = new Dialog(MainActivity.this); // Khai náo 1 cửa sổ
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // Bỏ tiêu đề
-                    dialog.setContentView(R.layout.work_detail);
-                   // final EditText subject   = dialog.findViewById(R.id.subject);
-                    TextView time            = dialog.findViewById(R.id.time);
-                    final EditText detail    = dialog.findViewById(R.id.detail);
-                    Button edit        = dialog.findViewById(R.id.button2);
-                    Button del         = dialog.findViewById(R.id.button3);
-                    Button back        = dialog.findViewById(R.id.button4);
-                    final Spinner spinner    = dialog.findViewById(R.id.spinner);
-                    final ImageView  image   = dialog.findViewById(R.id.imageView2);
-                    final ImageView detail_important = dialog.findViewById(R.id.detail_important);
-                    final Job job            = choose.get(position);
+                    dialog.setContentView(R.layout.work_detail); // Tham chiếu layout work_detail đến cửa sổ này
+                    TextView time            = dialog.findViewById(R.id.time); // TextView hiển thị thời gian công việc
+                    final EditText detail    = dialog.findViewById(R.id.detail); // Tham chiếu đến ô hiển thị và chỉnh sửa nội dung công việc
+                    Button edit              = dialog.findViewById(R.id.button2); // Tham chiếu đến nút chỉnh sửa
+                    Button del               = dialog.findViewById(R.id.button3); // Tham chiếu đến nút xóa
+                    Button back              = dialog.findViewById(R.id.button4); // Tham chiếu đến nút quay về
+                    final Spinner spinner    = dialog.findViewById(R.id.spinner); // Tham chiếu đến Spinner
+                    final ImageView  image   = dialog.findViewById(R.id.imageView2); // Tham chiếu đến hình ảnh hiển thị chủ đề công việc
+                    final ImageView detail_important = dialog.findViewById(R.id.detail_important); // Tham chiếu hình ảnh hiển thị mức độ công việc
+                    final Job job            = choose.get(position); // Lấy ra phần tử được chọn
                     switch (job.getSubject()){
-                        case "Cuộc họp": {
-                            list.clear();
-                            list.add("Cuộc họp");
-                            list.add("Du lịch");
-                            list.add("Sinh nhật");
-                            list.add("Cà phê");
-                            list.add("Hằng ngày");
-                            list.add("Khác");
-                        }; break;
-                        case "Du lịch": {
-                            list.clear();
-                            list.add("Du lịch");
-                            list.add("Cuộc họp");
-                            list.add("Sinh nhật");
-                            list.add("Cà phê");
-                            list.add("Hằng ngày");
-                            list.add("Khác");
-                        }; break;
-                        case "Sinh nhật": {
-                            list.clear();
-                            list.add("Sinh nhật");
-                            list.add("Cuộc họp");
-                            list.add("Du lịch");
-                            list.add("Cà phê");
-                            list.add("Hằng ngày");
-                            list.add("Khác");
-                        }; break;
-                        case "Cà phê": {
-                            list.clear();
-                            list.add("Cà phê");
-                            list.add("Du lịch");
-                            list.add("Cuộc họp");
-                            list.add("Sinh nhật");
-                            list.add("Hằng ngày");
-                            list.add("Khác");
-                        }; break;
-                        case "Hằng ngày": {
-                            list.clear();
-                            list.add("Hằng ngày");
-                            list.add("Cuộc họp");
-                            list.add("Du lịch");
-                            list.add("Sinh nhật");
-                            list.add("Cà phê");
-                            list.add("Khác");
-                        }; break;
-                        case "Khác": {
-                            list.clear();
-                            list.add("Du lịch");
-                            list.add("Cuộc họp");
-                            list.add("Sinh nhật");
-                            list.add("Cà phê");
-                            list.add("Hằng ngày");
-                            list.add("Khác");
-                        }; break;
+                        case "Cuộc họp" : { list.clear();list.add("Cuộc họp");list.add("Du lịch");list.add("Sinh nhật");list.add("Cà phê");list.add("Hằng ngày");list.add("Khác"); }; break;// Gán lại mảng
+                        case "Du lịch"  : { list.clear();list.add("Du lịch");list.add("Cuộc họp");list.add("Sinh nhật");list.add("Cà phê");list.add("Hằng ngày");list.add("Khác"); }; break;// Gán lại mảng
+                        case "Sinh nhật": {list.clear();list.add("Sinh nhật");list.add("Cuộc họp");list.add("Du lịch");list.add("Cà phê");list.add("Hằng ngày");list.add("Khác"); }; break; // Gán lại mảng
+                        case "Cà phê"   : { list.clear();list.add("Cà phê");list.add("Du lịch");list.add("Cuộc họp");list.add("Sinh nhật");list.add("Hằng ngày");list.add("Khác"); }; break;// Gán lại mảng
+                        case "Hằng ngày": {list.clear();list.add("Hằng ngày");list.add("Cuộc họp");list.add("Du lịch");list.add("Sinh nhật");list.add("Cà phê");list.add("Khác");}; break;  // Gán lại mảng
+                        case "Khác": {list.clear();list.add("Khác");list.add("Cuộc họp");list.add("Du lịch");list.add("Sinh nhật");list.add("Cà phê");list.add("Hằng ngày");}; break;       // Gán lại mảng
                     };
-                    //subject.setText(job.getSubject());
-                    time.setText(job.getTime_start()+"--"+job.getTime_end()+"\n"+job.getDate());
-                    detail.setText(job.getContent());
-                    if(job.isComplete()){
-                        detail_important.setImageResource(R.drawable.importantyellow);
+                    time.setText(job.getTime_start()+"--"+job.getTime_end()+"\n"+job.getDate());// Hiển thị thời gian của công việc được chọn
+                    detail.setText(job.getContent()); // Hiển thị nội dung công việc
+                    if(job.isComplete()){// Kiểm tra có phải là công việc quan trọng hay không
+                        detail_important.setImageResource(R.drawable.importantyellow); // Nếu có hiển thị biểu tượng công việc quan trọng
                     }else{
-                        detail_important.setImageResource(R.drawable.important);
+                        detail_important.setImageResource(R.drawable.important); // Nếu không hiển thị biểu tượng công việc không quan trọng
                     }
-                    //ArrayAdapter<String> adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_spinner_item,list);
-                   SpinnerAdapterA adapter = new SpinnerAdapterA(MainActivity.this, R.layout.layout_spinner, list);
-                    adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
-                    spinner.setAdapter(adapter);
-
-                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                   SpinnerAdapterA adapter = new SpinnerAdapterA(MainActivity.this, R.layout.layout_spinner, list);// Khai báo adapter để có thể chọn chủ đề
+                    adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice); // Khai báo kiểu danh sách cho Spinner
+                    spinner.setAdapter(adapter); // Áp dụng adapter cho Spinner
+                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {// Đặt sự kiện khi chọn 1 phần tử trong Spinner
                         @Override
                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                            //Toast.makeText(MainActivity.this, spinner.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
-                            switch (spinner.getSelectedItem().toString()){
-                                case "Cuộc họp" :   image.setImageResource(R.drawable.meeting); break;
-                                case "Du lịch"  :   image.setImageResource(R.drawable.travel); break;
-                                case "Sinh nhật":   image.setImageResource(R.drawable.birth); break;
-                                case "Cà phê"   :   image.setImageResource(R.drawable.tea); break;
-                                case "Hằng ngày":   image.setImageResource(R.drawable.daily); break;
-                                case "Khác"     :   image.setImageResource(R.drawable.diference); break;
+                            switch (spinner.getSelectedItem().toString()){// Phần tử được chọn
+                                case "Cuộc họp" :   image.setImageResource(R.drawable.meeting); break;  // Thay đổi hình ảnh phù hợp với chủ đề Cuộc họp
+                                case "Du lịch"  :   image.setImageResource(R.drawable.travel); break;   // Thay đổi hình ảnh phù hợp với chủ đề Du lịch
+                                case "Sinh nhật":   image.setImageResource(R.drawable.birth); break;    // Thay đổi hình ảnh phù hợp với chủ đề Sinh nhật
+                                case "Cà phê"   :   image.setImageResource(R.drawable.tea); break;      // Thay đổi hình ảnh phù hợp với chủ đề Cà phê
+                                case "Hằng ngày":   image.setImageResource(R.drawable.daily); break;    // Thay đổi hình ảnh phù hợp với chủ đề Hằng ngày
+                                case "Khác"     :   image.setImageResource(R.drawable.diference); break;// Thay đổi hình ảnh phù hợp với chủ đề Khác
                             }
-
                         }
-
                         @Override
-                        public void onNothingSelected(AdapterView<?> adapterView) {
-
+                        public void onNothingSelected(AdapterView<?> adapterView) {// Nếu không làm gì
                         }
                     });
-                    detail_important.setOnClickListener(new View.OnClickListener() {
+                    detail_important.setOnClickListener(new View.OnClickListener() {// Đặt sự kiện cho chức năng thay đổi mức độ của công việc
                         @Override
                         public void onClick(View v) {
-                            job.setComplete(!job.isComplete());
+                            job.setComplete(!job.isComplete());// Thay đổi ngược lại với mức độ hiện có trước đó
                             if(job.isComplete()){
-                                detail_important.setImageResource(R.drawable.importantyellow);
+                                detail_important.setImageResource(R.drawable.importantyellow);// Thay đổi sang biểu tượng quan trọng
                             }else{
-                                detail_important.setImageResource(R.drawable.important);
+                                detail_important.setImageResource(R.drawable.important); // Thay đổi sang biểu tượng không quan trọng
                             }
                         }
                     });
-                    dialog.show();
+                    dialog.show();// Hiển thị cửa sổ cho người dùng thực hiện thao tác
                     // Chỉnh sửa
-                    edit.setOnClickListener(new View.OnClickListener() {
+                    edit.setOnClickListener(new View.OnClickListener() {// Đặt sự kiện chỉnh sửa công việc và lưu lại vào CSDL
                         @Override
                         public void onClick(View v) {
-                            job.setContent(detail.getText().toString());
-                            job.setSubject(spinner.getSelectedItem().toString());
-                            String update = "UPDATE CongViec SET Subject = '"+spinner.getSelectedItem().toString()+"', Content='"+detail.getText().toString()+"', Complete='"+job.isComplete()+"' WHERE Id = '"+job.getId()+"'";
-                            database.SQLQuery(update);
-                            getData(dayshow.getText().toString());
-                            dialog.dismiss();
+                            job.setContent(detail.getText().toString());// Đặt lại nội dung công việc
+                            job.setSubject(spinner.getSelectedItem().toString()); // Đặt lại chủ đề công việc
+                            String update = "UPDATE CongViec SET Subject = '"+spinner.getSelectedItem().toString()+"', Content='"+detail.getText().toString()+"', Complete='"+job.isComplete()+"' WHERE Id = '"+job.getId()+"'"; // Lệnh update trong CSDL
+                            database.SQLQuery(update); // Thực hiện lệnh update
+                            getData(dayshow.getText().toString()); // Đổ lại dữ liệu từ CSDL lên danh sách
+                            dialog.dismiss();// Đóng cửa sổ
                         }
                     });
                     // Xóa
-                    del.setOnClickListener(new View.OnClickListener() {
+                    del.setOnClickListener(new View.OnClickListener() { // Đặt sự kiện xóa công việc
                         @Override
                         public void onClick(View v) {
-                            String delete = "DELETE FROM CongViec WHERE Id  = '"+job.getId()+"'";
-                            database.SQLQuery(delete);
-                            getData(dayshow.getText().toString());
-                            delNotification(job);
-                            dialog.dismiss();
+                            String delete = "DELETE FROM CongViec WHERE Id  = '"+job.getId()+"'";// Lệnh xóa dữ liệu trong CSDL
+                            database.SQLQuery(delete); // Thực hiện lệnh xóa
+                            getData(dayshow.getText().toString()); // Lấy dữ liệu từ CSDL và đổ lại lên danh sách
+                            alarmNotification.delNotification(job,MainActivity.this); // Xóa thông báo công việc
+                            dialog.dismiss(); // Đóng cửa sổ
                         }
                     });
                     // Quay lại
-                    back.setOnClickListener(new View.OnClickListener() {
+                    back.setOnClickListener(new View.OnClickListener() {// Đặt sự kiện cho chức năng quay lại và không làm gì cả
                         @Override
                         public void onClick(View v) {
-                            dialog.dismiss();
+                            dialog.dismiss();// Đóng cửa sổ
                         }
                     });
                 }
@@ -889,19 +804,6 @@ public class MainActivity extends AppCompatActivity {
                 convertView.getTag();
             return convertView;
         }
-    }
-    // Hàm hủy thông báo khi xóa hoặc đánh dấu hoàn thành công việc
-    public void delNotification(Job job){
-        AlarmManager alarmManager;
-        PendingIntent pendingIntent;
-        // Hủy thông báo công việc
-        String[] arrDay  = job.getDate().split("/");
-        String[] arrTime = job.getTime_start().split(":");
-        int code         = Integer.parseInt(arrDay[0]+arrDay[1]+arrTime[0]+arrTime[1]);
-        alarmManager= (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent intentAlarm = new Intent(MainActivity.this,AlarmRecevier.class);
-        pendingIntent = PendingIntent.getBroadcast(MainActivity.this, code, intentAlarm,PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.cancel(pendingIntent);
     }
 }
 
