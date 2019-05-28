@@ -71,4 +71,5 @@
         app:layout_constraintStart_toEndOf="@+id/important"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/checked" />
+
 </android.support.constraint.ConstraintLayout>

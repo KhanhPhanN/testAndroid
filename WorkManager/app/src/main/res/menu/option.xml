@@ -18,4 +18,8 @@
         android:title="Lịch sử"
         android:id="@+id/history"
         app:showAsAction="ifRoom"/>
+    <item
+        android:title="Chia sẻ"
+        android:id="@+id/share"
+        app:showAsAction="ifRoom"/>
 </menu>

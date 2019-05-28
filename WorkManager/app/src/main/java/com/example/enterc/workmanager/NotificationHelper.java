@@ -13,33 +13,26 @@ import android.support.v4.app.NotificationCompat;
 
 
 public class NotificationHelper extends ContextWrapper {
-    public static final String channelID = "channelID";
-    public static final String channelName = "Channel Name";
-    private static final int MY_NOTIFICATION_ID = 12345;
-    private static final int MY_REQUEST_CODE = 100;
-    private NotificationManager mManager;
+    public static final String channelID = "channelID";// Đặt channel ID
+    public static final String channelName = "Channel Name";// Đặt tên channel
+    private NotificationManager mManager;// Biến sẽ thiết lập quản lý thông báo
     public NotificationHelper(Context base) {
         super(base);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createChannel();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {// Nếu SDK version lớn hơn điều kiện
+            createChannel();// Tạo channel quản lý thông báo
         }
     }
-
     @TargetApi(Build.VERSION_CODES.O)
     private void createChannel() {
-        NotificationChannel channel = new NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_HIGH);
-
-        getManager().createNotificationChannel(channel);
+        NotificationChannel channel = new NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_HIGH);// Tạo nhóm quản lý thông báo
+        getManager().createNotificationChannel(channel);// Thực hiện tạo nhóm
     }
-
     public NotificationManager getManager() {
-        if (mManager == null) {
-            mManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (mManager == null) {// Nếu biến quản lý chưa được khởi tạo
+            mManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);// Khởi tạo thông báo
         }
-
         return mManager;
     }
-
     public NotificationCompat.Builder getChannelNotification(int noId, int reCode, String s) {
         NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(this);
         // Thông báo sẽ tự động bị hủy khi người dùng click vào Panel
@@ -47,13 +40,13 @@ public class NotificationHelper extends ContextWrapper {
         // --------------------------
         // Chuẩn bị một thông báo
         // --------------------------
-        notBuilder.setSmallIcon(R.mipmap.calender);
+        notBuilder.setSmallIcon(R.mipmap.calender);// Đặt icon cho thông báo
         notBuilder.setTicker("This is a ticker");
         // Sét đặt thời điểm sự kiện xẩy ra.
         // Các thông báo trên Panel được sắp xếp bởi thời gian này.
         notBuilder.setWhen(System.currentTimeMillis()+ 10* 1000);
-        notBuilder.setContentTitle("Nhắc nhở");
-        notBuilder.setContentText("Có 1 công việc hiện tại: "+s);
+        notBuilder.setContentTitle("Nhắc nhở");// Đặt tiêu đề thông báo
+        notBuilder.setContentText("Có 1 công việc hiện tại: "+s);// Đặt nội dung thông báo
         // Tạo một Intent
         Intent intent = new Intent(this, MainActivity.class);
         // PendingIntent.getActivity(..) sẽ start mới một Activity và trả về
@@ -66,6 +59,6 @@ public class NotificationHelper extends ContextWrapper {
         // Xây dựng thông báo và gửi nó lên hệ thống.
         Notification notification =  notBuilder.build();
         notificationService.notify(noId, notification);
-        return  notBuilder;
+        return  notBuilder;// Trả về thông báo
     }
 }

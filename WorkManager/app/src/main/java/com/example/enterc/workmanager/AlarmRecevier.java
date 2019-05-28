@@ -12,12 +12,9 @@ public class AlarmRecevier extends BroadcastReceiver {
     int noId   = 0;
     @Override
     public void onReceive(Context context, Intent intent) {
-        Bundle bundle = intent.getBundleExtra("nameBundle");
-        String subject= bundle.getString("nameSubject");
-        NotificationHelper notificationHelper = new NotificationHelper(context);
-        NotificationCompat.Builder nb = notificationHelper.getChannelNotification(noId,reCode, subject);
-        reCode++;
-        noId++;
-        //notificationHelper.getManager().notify(1, nb.build());
+        Bundle bundle = intent.getBundleExtra("nameBundle");// Nhân dữ liệu từ màn hình khác chuyển tới
+        String subject= bundle.getString("nameSubject");// Lấy ra dữ liệu
+        NotificationHelper notificationHelper = new NotificationHelper(context); // Khởi tạo 1 đối tượng để thiết lập thông báo
+        NotificationCompat.Builder nb = notificationHelper.getChannelNotification(noId,reCode, subject);// Thiết lập thông báo
     }
 }
